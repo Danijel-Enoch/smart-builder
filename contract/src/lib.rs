@@ -41,6 +41,7 @@ enum StorageKey {
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct TokenFactory {
     pub tokens: UnorderedMap<TokenId, TokenArgs>,
+    pub nfts: UnorderedMap<TokenId, NftArgs>,
     pub storage_deposits: LookupMap<AccountId, Balance>,
     pub storage_balance_cost: Balance,
 }
@@ -48,13 +49,23 @@ pub struct TokenFactory {
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct TokenArgs {
-    owner_id: ValidAccountId,
+    owner_id: AccountId,
+    total_supply: U128,
+    metadata: FungibleTokenMetadata,
+}
+pub struct NftArgs {
+    owner_id: AccountId,
+    total_supply: U128,
+    metadata: FungibleTokenMetadata,
+}
+pub struct DexFarmArgs {
+    owner_id: AccountId,
     total_supply: U128,
     metadata: FungibleTokenMetadata,
 }
 
 #[near_bindgen]
-impl TokenFactory {
+impl BuilderFactory {
     #[init]
     pub fn new() -> Self {
         let mut storage_deposits = LookupMap::new(StorageKey::StorageDeposits);
